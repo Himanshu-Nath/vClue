@@ -16,16 +16,14 @@ export class Covid19Controller {
             firstName: req.body.firstName,
             lastName: req.body.lastName
         };
-        console.log("------1")
         console.log(req.body)
         Covid19.create(data)
         .then((data: ICovid19) => {
-            console.log("------2")
             console.log(data);
             res.json({ status: "success", success: true, message: "Daily report added successfully!" });
         })
         .catch((error: Error) => {
-            console.log("------3")
+            console.log(error)
             res.json({ status: "Fail", success: false, message: "Fail to add Daily Report!" });
         });
     }
@@ -40,8 +38,17 @@ export class Covid19Controller {
         //     else
         //         res.json({ status: "success", success: true, message: "Daily count fetched successfully!", data: result });
         // });
-        console.log("------4")
+        console.log("--------1")
         res.json({ status: "success", success: true, message: "Daily count fetched successfully!" });
+    }
+
+    public async dailyId(req: Request, res: Response) {
+        try {
+            // const items: Items = await ItemService.findAll();        
+            res.status(200).send({ status: "success", success: true, message: "Daily count fetched successfully!", data: req.params });
+          } catch (e) {
+            res.status(404).send(e.message);
+          }        
     }
 }
 

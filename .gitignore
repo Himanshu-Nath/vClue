@@ -1,4 +1,4 @@
 node_modules
 .env
 dist
-package-locak.json
+package-lock.json

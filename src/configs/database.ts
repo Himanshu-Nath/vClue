@@ -14,22 +14,16 @@ type TInput = {
 }
 
 export default ({dbURL}: TInput) => {
-
-    console.log("======4")
     mongoose.connect(dbURL);
-
     const conn: any = mongoose.connection;
 
     conn.on('error', function(err: any) {
-        console.log("======1")
         console.log(error("Mongoose default connection has occured "+err+" error"));
     });
     conn.once('connected', function() {
-        console.log("======2")
         console.log(connected("Mongoose default connection is open to ", dbURL));
     });
-    conn.once('connected', function() {
-        console.log("======3")
+    conn.once('disconnected', function() {
         console.log(disconnected("Mongoose default connection is disconnected"));
     });
     process.on('SIGINT', function() {  

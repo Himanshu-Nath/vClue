@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf dist/*",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./dist/server.js",
+    "start": "nodemon ./dist/server.js",
     "start-nodemon": "nodemon ./dist/server.js",
     "tsc": "tsc",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts  ",

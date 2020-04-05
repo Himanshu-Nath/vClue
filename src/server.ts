@@ -9,10 +9,12 @@ import morgan from "morgan";
 import * as bodyParser from "body-parser";
 
 import dbConnect from './configs/database';
-
-const covid19 = require('./routes/covid19.route');
+import routes from './routes';
+import { errorHandler } from './middleware/error.middleware';
+import {notFoundHandler} from './middleware/notFound.middleware';
 
 dotenv.config();
+
 /**
  * App Variables
  */
@@ -22,7 +24,6 @@ if (!process.env.PORT) {
 const PORT: number = parseInt(process.env.PORT as string, 10);
 const app: express.Application = express();
 const dbURL = String(process.env.MONGODB_LOCALHOST_URL);
-dbConnect({dbURL});
 
 /**
  *  App Configuration
@@ -36,30 +37,16 @@ app.use(bodyParser.json());
 //support application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: false }));
 
+dbConnect({dbURL});
+routes({app});
+
 app.get('/', function(req, res) {
     res.send({ "vClue": "Build REST API with node.js" })
 });
-// public route
-// app.use('/users', users);
-// private route
-app.use('/api/covid19', covid19);
-
-// handle 404 error
-app.use(function (req, res, next) {
-    let err: any = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
 
 // handle errors
-app.use(function (err: any, req: any, res:  any, next: any) {
-    console.log(err);
-    if (err.status === 404)
-        res.status(404).json({ message: "Not found" });
-    else
-        res.status(500).json({ message: "Something looks wrong :( !!!" });
-});
-
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 /**
  * Server Activation
