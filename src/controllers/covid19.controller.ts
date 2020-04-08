@@ -1,5 +1,8 @@
 import Covid19, { ICovid19 } from "../models/covid19.model";
 import { Request, Response } from 'express';
+import { DownloadService } from "../common/downloader";
+
+let downloadService = new DownloadService();
 
 interface ICreateCovid19Input {
     email: ICovid19['email'];
@@ -38,7 +41,6 @@ export class Covid19Controller {
         //     else
         //         res.json({ status: "success", success: true, message: "Daily count fetched successfully!", data: result });
         // });
-        console.log("--------1")
         res.json({ status: "success", success: true, message: "Daily count fetched successfully!" });
     }
 
@@ -49,6 +51,15 @@ export class Covid19Controller {
           } catch (e) {
             res.status(404).send(e.message);
           }        
+    }
+
+    public async downloadAllCovid19Csv(req: Request, res: Response) {
+        downloadService.covid19DailyCSVReport();
+        downloadService.covid19TimeSeriesCSVReport();
+        downloadService.covid19SitPDFReport();
+        downloadService.covid19SitTimeSeriesCSVReport();
+        downloadService.worldPopulationCSVReport();
+        res.json({ status: "success", success: true, message: "File Successfully Downloaded!" });
     }
 }
 
