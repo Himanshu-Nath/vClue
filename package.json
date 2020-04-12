@@ -12,7 +12,7 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts  ",
     "webpack": "webpack --config webpack.config.ts",
     "prod": "npm run tsc && npm run start",
-    "heroku-postbuild": "webpack -p --config webpack.config.js"
+    "heroku-postbuild": "webpack --config webpack.config.js"
   },
   "author": "Himanshu nath",
   "license": "ISC",
