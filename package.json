@@ -4,6 +4,7 @@
   "description": "Various virus information",
   "main": "server.js",
   "scripts": {
+    "heroku-postbuild": "webpack -p --config ./webpack.config.js --progress",
     "clean": "rimraf dist/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./dist/server.js",
