@@ -4,7 +4,6 @@
   "description": "Various virus information",
   "main": "server.js",
   "scripts": {
-    "heroku-postbuild": "webpack -p --config ./webpack.config.js --progress",
     "clean": "rimraf dist/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./dist/server.js",
@@ -12,7 +11,8 @@
     "tsc": "tsc",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts  ",
     "webpack": "webpack --config webpack.config.ts",
-    "prod": "npm run tsc && npm run start"
+    "prod": "npm run tsc && npm run start",
+    "heroku-postbuild": "webpack -p --config webpack.config.js"
   },
   "author": "Himanshu nath",
   "license": "ISC",
