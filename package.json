@@ -12,7 +12,7 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts  ",
     "webpack": "webpack --config webpack.config.ts",
     "prod": "npm run tsc && npm run start",
-    "heroku-postbuild": "webpack --config webpack.config.js"
+    "heroku-postbuild": "webpack -p --config ./webpack.config.ts --progress"
   },
   "author": "Himanshu nath",
   "license": "ISC",
@@ -38,10 +38,7 @@
     "mongoose": "^5.7.9",
     "morgan": "^1.9.1",
     "passport": "^0.4.1",
-    "typescript": "^3.8.3",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11",
-    "webpack-node-externals": "^1.7.2"
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
