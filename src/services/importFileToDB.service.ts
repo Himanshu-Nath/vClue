@@ -15,7 +15,7 @@ var successLog = chalk.italic.magenta;
 
 export class ImportFileToDBService {
 
-    public static async covid19DailyCSVReport(req: Request, res: Response) {
+    public static async covid19DailyCSVReport(req?: Request, res?: Response) {
         await DailyReport.deleteMany({});
         let record = await DailyReport.countDocuments();
         var tdDt = new Date();
@@ -24,22 +24,26 @@ export class ImportFileToDBService {
         fs.access(filePath, fs.constants.F_OK, async (err) => {
             if (err) {
                 console.log(errorLog("File "+ fileName +" not found!"));
-                res.json({ status: "Fail", success: true, message: "Daily Report File "+ fileName +" not found!" });
+                if(res !== undefined)
+                    res.json({ status: "Fail", success: true, message: "Daily Report File "+ fileName +" not found!" });
             } else {
                 let jsonObj = await csv().fromFile(filePath);
                 await DailyReport.create(jsonObj)
                 .then(async (data) => {
-                    await DailyReport.deleteMany({ Admin2: {"$exists" : true, "$ne" : ""} }, function(err) {})
-                    res.json({ status: "success", success: true, message: "Daily Report added successfully!" });
+                    await DailyReport.deleteMany({ Admin2: {"$exists" : true, "$ne" : ""} }, function(err) {});
+                    console.log(successLog("File "+ fileName +" imported successfully!"));
+                    if(res !== undefined)
+                        res.json({ status: "success", success: true, message: "Daily Report added successfully!" });
                 })
                 .catch((error: Error) => {
-                    res.json({ status: "Fail", success: false, message: "Fail to add Daily Report!", error });
+                    if(res !== undefined)
+                        res.json({ status: "Fail", success: false, message: "Fail to add Daily Report!", error });
                 });
             }            
         });
     }
 
-    public static async covid19TimeSeriesCSVReport(req: Request, res: Response) {
+    public static async covid19TimeSeriesCSVReport(req?: Request, res?: Response) {
         let importObj: any = [];
         let gConfirmed = await csv().fromFile(COVID19_DOWNLOADED_FILE_PATH.TIME_SERIES_CSV_REPORT +'/' + TIME_SERIES_COVID19_CSV_REPORT.CONFIRM_G );
 
@@ -49,8 +53,8 @@ export class ImportFileToDBService {
 
         await _.forEach(gConfirmed, function(value, key) {
             let obj = {} as any;
-            obj["Province/State"] = value["Province/State"];
-            obj["Country/Region"] = value["Country/Region"];
+            obj["Province_State"] = value["Province/State"];
+            obj["Country_Region"] = value["Country/Region"];
             obj["Lat"] = value["Lat"];
             obj["Long"] = value["Long"];            
             
@@ -84,14 +88,16 @@ export class ImportFileToDBService {
             obj["Confirmed"] = confirmed;
             importObj.push(obj);          
         });
-        console.log(successLog("Time Series created successfully"));
+        console.log(successLog("Time Series imported successfully"));
         await TimeSeries.deleteMany({});
         await TimeSeries.create(importObj)
         .then(async (data) => {
-            res.json({ status: "success", success: true, message: "Time Sheet added successfully!" });
+            if(res !== undefined)
+                res.json({ status: "success", success: true, message: "Time Sheet added successfully!" });
         })
         .catch((error: Error) => {
-            res.json({ status: "Fail", success: false, message: "Fail to add Time Sheet!", error });
+            if(res !== undefined)
+                res.json({ status: "Fail", success: false, message: "Fail to add Time Sheet!", error });
         });
     }
 
@@ -99,18 +105,25 @@ export class ImportFileToDBService {
 
     }
 
-    public static async worldPopulationCSVReport(req: Request, res: Response) {
+    public static async worldPopulationCSVReport(req?: Request, res?: Response) {
+        await WorldPopulation.deleteMany({});
         let record = await WorldPopulation.countDocuments();
         if(!record) {
             let jsonObj = await csv().fromFile(COVID19_DOWNLOADED_FILE_PATH.WLD_POP_CSV_REPORT +'/' + WORLD_POP_FILE_NAME );
             await WorldPopulation.create(jsonObj)
             .then((data) => {
-                res.json({ status: "success", success: true, message: "World Population added successfully!" });
+                console.log(successLog("World Population imported successfully"));
+                WorldPopulation.deleteMany({ Province_State: {"$exists" : true, "$ne" : ""} }, function(err) {});  
+                if(res !== undefined)
+                    res.json({ status: "success", success: true, message: "World Population added successfully!" });
             })
             .catch((error: Error) => {
-                res.json({ status: "Fail", success: false, message: "Fail to add World Population!", error });
+                if(res !== undefined)
+                    res.json({ status: "Fail", success: false, message: "Fail to add World Population!", error });
             });
-        } else
-            res.json({ status: "Fail", success: true, message: "World Population records already present!" });
+        } else {
+            if(res !== undefined)
+                res.json({ status: "Fail", success: true, message: "World Population records already present!" });
+        }
     }
 }

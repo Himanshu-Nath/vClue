@@ -1,8 +1,8 @@
 import mongoose, {Document, Schema} from 'mongoose';
 
 export interface ITimeSeries extends Document {
-    "Province/State": string;
-    "Country/Region": string;
+    "Province_State": string;
+    "Country_Region": string;
     Lat	: number;
     Long: number;
     Confirmed: any;
@@ -11,8 +11,8 @@ export interface ITimeSeries extends Document {
 };
 
 const TimeSeriesSchema: Schema = new Schema({
-    "Province/State": { type: String },
-    "Country/Region": { type: String },
+    "Province_State": { type: String },
+    "Country_Region": { type: String },
     Lat: { type: Number },
     Long: { type: Number },
     Confirmed: [],

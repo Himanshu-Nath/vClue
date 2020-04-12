@@ -1,8 +1,12 @@
-import Covid19, { ICovid19 } from "../models/covid19.model";
-import DailyReport, { IDailyReport } from "../models/daily-report.model";
 import { Request, Response } from 'express';
 import { DownloadService } from "../common/downloader";
+
 import { ImportFileToDBService } from "../services/importFileToDB.service";
+
+import WorldPopulation, { IWorldPopulation } from "../models/world-population.model";
+import DailyReport, { IDailyReport } from "../models/daily-report.model";
+import Covid19, { ICovid19 } from "../models/covid19.model";
+import TimeSeries, { ITimeSeries } from "../models/time-series.model";
 
 let downloadService = new DownloadService();
 
@@ -65,9 +69,9 @@ export class Covid19Controller {
         try {
             // const items: Items = await ItemService.findAll();        
             res.status(200).send({ status: "success", success: true, message: "Daily count fetched successfully!", data: req.params });
-          } catch (e) {
+        } catch (e) {
             res.status(404).send(e.message);
-          }        
+        }        
     }
 
     public async getDailyReport(req: Request, res: Response) {
@@ -108,29 +112,104 @@ export class Covid19Controller {
         if( typeof req.query.reclt != 'undefined' ) {
             query.Recovered = { "$lte" : req.query.reclt };
         }
-        
+
         try {
             const count = await DailyReport.count(query);   
             const data = await DailyReport.find(query, {__v: 0}, options);        
-            res.status(200).send({ status: "success", success: true, message: "Daily count fetched successfully!", data, totalRecord: count, pages: Math.ceil(count / size)});
-          } catch (e) {
+            res.status(200).send({ status: "success", success: true, message: "Daily Report fetched successfully!", data, totalRecord: count, pages: Math.ceil(count / size)});
+        } catch (e) {
             res.status(404).send(e.message);
-          }        
+        }
+    }
+
+    public async getWldPopReport(req: Request, res: Response) {
+        var page = parseInt(req.query.page) || 1;
+        var size = parseInt(req.query.size) || 50;
+        var sort = req.query.sort || 'Country_Region';
+        var order = parseInt(req.query.order) || 1;
+        if(page < 0 || page === 0) {
+            res.status(400).send({ status: "success", success: false, message: "Invalid page number, should start with 1"});
+        }
+
+        var query: any = {};
+        var options: any = {};
+        options.skip = size * (page - 1);
+        options.limit = size;
+        options.sort = {[sort]: order};
+
+        if( typeof req.query.Country_Region != 'undefined' ) {
+            query.Country_Region = { $regex: req.query.Country_Region, $options: 'i' };
+        }
+
+        if( typeof req.query.popgt != 'undefined' ) {
+            query.Population = { "$gte" : req.query.popgt };
+        }
+        if( typeof req.query.poplt != 'undefined' ) {
+            query.Population = { "$gte" : req.query.poplt };
+        }
+
+        try {
+            const count = await WorldPopulation.count(query);   
+            const data = await WorldPopulation.find(query, {__v: 0}, options);        
+            res.status(200).send({ status: "success", success: true, message: "World Popluation fetched successfully!", data, totalRecord: count, pages: Math.ceil(count / size)});
+        } catch (e) {
+            res.status(404).send(e.message);
+        }
+    }
+
+    public async getTimeSerReport(req: Request, res: Response) {
+        var page = parseInt(req.query.page) || 1;
+        var size = parseInt(req.query.size) || 50;
+        var sort = req.query.sort || 'Country_Region';
+        var order = parseInt(req.query.order) || 1;
+        if(page < 0 || page === 0) {
+            res.status(400).send({ status: "success", success: false, message: "Invalid page number, should start with 1"});
+        }
+
+        var query: any = {};
+        var options: any = {};
+        options.skip = size * (page - 1);
+        options.limit = size;
+        options.sort = {[sort]: order};
+
+        if( typeof req.query.Country_Region != 'undefined' ) {
+            query.Country_Region = { $regex: req.query.Country_Region, $options: 'i' };
+        }
+
+        try {
+            const count = await TimeSeries.count(query);   
+            const data = await TimeSeries.find(query, {__v: 0}, options);        
+            res.status(200).send({ status: "success", success: true, message: "Time Series fetched successfully!", data, totalRecord: count, pages: Math.ceil(count / size)});
+        } catch (e) {
+            res.status(404).send(e.message);
+        }
     }
 
     public async downloadAllCovid19Csv(req: Request, res: Response) {
         downloadService.covid19DailyCSVReport();
-        // downloadService.covid19TimeSeriesCSVReport();
-        // downloadService.covid19SitPDFReport();
-        // downloadService.covid19SitTimeSeriesCSVReport();
-        // downloadService.worldPopulationCSVReport();
+        downloadService.covid19TimeSeriesCSVReport();
+        downloadService.covid19SitPDFReport();
+        downloadService.covid19SitTimeSeriesCSVReport();
+        downloadService.worldPopulationCSVReport();
         res.json({ status: "success", success: true, message: "File Successfully Downloaded!" });
+    }
+
+    public async importDailyCsvReport(req: Request, res: Response) {
+        ImportFileToDBService.covid19DailyCSVReport(req, res);
+    }
+
+    public async importTimeSerCsvReport(req: Request, res: Response) {
+        ImportFileToDBService.covid19TimeSeriesCSVReport(req, res);
+    }
+
+    public async importWldPopCsvReport(req: Request, res: Response) {
+        ImportFileToDBService.worldPopulationCSVReport(req, res);
     }
 
     public async importAllCovid19Csv(req: Request, res: Response) {
         ImportFileToDBService.covid19DailyCSVReport(req, res);
-        // ImportFileToDBService.covid19TimeSeriesCSVReport(req, res);
-        // ImportFileToDBService.worldPopulationCSVReport(req, res);
-    }    
+        ImportFileToDBService.covid19TimeSeriesCSVReport(req, res);
+        ImportFileToDBService.worldPopulationCSVReport(req, res);
+    }
 }
 

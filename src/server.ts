@@ -9,6 +9,7 @@ import morgan from "morgan";
 import * as bodyParser from "body-parser";
 
 import dbConnect from './configs/database';
+import crons from './services/cron.service';
 import routes from './routes';
 import { errorHandler } from './middleware/error.middleware';
 import {notFoundHandler} from './middleware/notFound.middleware';
@@ -23,7 +24,7 @@ if (!process.env.PORT) {
 }
 const PORT: number = parseInt(process.env.PORT as string, 10);
 const app: express.Application = express();
-const dbURL = String(process.env.MONGODB_LOCALHOST_URL);
+const dbURL = String(process.env.MONGODB_MLAB_URL);
 
 /**
  *  App Configuration
@@ -39,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 dbConnect({dbURL});
 routes({app});
+crons();
 
 app.get('/', function(req, res) {
     res.send({ "vClue": "Build REST API with node.js" })

@@ -8,8 +8,14 @@ router.get('/daily', covid19Controller.countDailyReport);
 router.post('/addreport', covid19Controller.createDailyReport);
 router.put('/daily/:id', covid19Controller.dailyId);
 router.get('/download', covid19Controller.downloadAllCovid19Csv);
-router.get('/import', covid19Controller.importAllCovid19Csv);
+
+//Import
+router.get('/importdr', covid19Controller.importDailyCsvReport);
+router.get('/importtsr', covid19Controller.importTimeSerCsvReport);
+router.get('/importwpr', covid19Controller.importWldPopCsvReport);
 
 router.get('/dailyreport', covid19Controller.getDailyReport);
+router.get('/worldpopulation', covid19Controller.getWldPopReport);
+router.get('/timeseries', covid19Controller.getTimeSerReport);
 
 export default router;
