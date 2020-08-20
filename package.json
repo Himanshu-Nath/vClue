@@ -20,7 +20,7 @@
     "@types/bluebird": "^3.5.30",
     "@types/mongoose": "^5.7.8",
     "D": "^1.0.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.7.1",
     "body-parser": "^1.19.0",
     "chalk": "^4.0.0",
